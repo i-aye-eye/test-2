@@ -2,16 +2,30 @@ name: Dev CI
 on:
   push:
   workflow_dispatch:
-permissions:
-  contents: read
-  id-token: write
 
 jobs:
-  dev:
-    uses: i-aye-eye/test-ci/.github/workflows/gh200.yml@v0
-    with:
-      dispatch: mvp
-      profile: dev-cpu
-    secrets:
-      origin-token: ${{ secrets.BRICS_CI_ORIGIN_TOKEN }}
-      runner-admin-pat: ${{ secrets.RUNNER_ADMIN_PAT }}
+  request:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: i-aye-eye/test-ci/request-runner@v0
+        with:
+          dispatch: mvp
+          profile: dev-cpu
+          url: ${{ vars.BRICS_CI_URL }}
+          origin-token: ${{ secrets.BRICS_CI_ORIGIN_TOKEN }}
+          runner-admin-pat: ${{ secrets.RUNNER_ADMIN_PAT }}
+
+  run:
+    needs: request
+    runs-on: [test-ci-dev-cpu, "test-ci-run-${{ github.run_id }}"]
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - run: |
+          id
+          hostname
+          pwd
