@@ -5,14 +5,13 @@ on:
 permissions:
   contents: read
   id-token: write
+
 jobs:
   dev:
     uses: i-aye-eye/test-ci/.github/workflows/gh200.yml@v0
     with:
+      dispatch: mvp
       profile: dev-cpu
-      script: ci/dev.sh
-      args: ${{ vars.TEST_CI_SLEEP || '0' }}
-      dispatch: ${{ vars.TEST_CI_DISPATCH || 'manual' }}
     secrets:
       origin-token: ${{ secrets.BRICS_CI_ORIGIN_TOKEN }}
       runner-admin-pat: ${{ secrets.RUNNER_ADMIN_PAT }}
